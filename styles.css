@@ -32,9 +32,8 @@ body { background-color: var(--bg-color); color: var(--text-main); min-height: 1
 
 .post-title { font-size: 1.35rem; margin-bottom: 0.5rem; color: #fff; }
 .post-date { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem; display: block; }
-.post-content { color: #cbd5e1; line-height: 1.6; font-size: 0.95rem; }
+.post-content { color: #cbd5e1; line-height: 1.6; font-size: 0.95rem; white-space: pre-wrap; }
 
-/* Admin Styles */
 .form-group { margin-bottom: 1.25rem; }
 .form-group label { display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.875rem; }
 input, textarea { width: 100%; padding: 0.75rem 1rem; background: #0f172a; border: 1px solid var(--border); border-radius: 6px; color: #fff; font-size: 0.95rem; outline: none; }
