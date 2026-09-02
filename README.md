@@ -44,3 +44,14 @@ Tanveer-Hussain/
 │   ├── app.js          # Dynamic UI loader & search functionality
 │   └── admin.js        # Admin interaction scripts
 └── assets/             # Brand logos, preview cards, and static media
+│   └── admin.js        # Admin interaction scripts
+└── assets/             # Brand logos, preview cards, and static media
+
+🔗 Connect & Follow
+Stay connected across official channels:
+GitHub: @VexorNull
+Instagram: @VexorNull
+TikTok: @VexorNull
+YouTube: @VexorNull
+📄 License
+This project is maintained by Tanveer Hussain. All rights reserved. Feel free to explore and reference the source code for educational purposes
