@@ -30,19 +30,27 @@
 </head>
 <body>
 
+  <!-- Authentic Navbar -->
   <nav class="navbar">
-    <a href="./index.html" class="logo">Tanveer<span>Hussain</span></a>
+    <a href="./index.html" class="logo">
+      <span class="logo-mark">T</span>Tanveer<span>Hussain</span>
+    </a>
     <div class="nav-links">
-      <button class="btn-theme" id="theme-toggle">🌙 / ☀️</button>
-      <a href="./index.html">Home</a>
+      <button class="btn-theme" id="theme-toggle" aria-label="Toggle Theme">🌙 / ☀️</button>
+      <a href="./index.html" class="active">Home</a>
       <a href="./admin.html">Admin Portal</a>
     </div>
   </nav>
 
+  <!-- Hero Header Section -->
   <header class="hero">
+    <div class="status-badge">
+      <span class="status-dot"></span> Official Tech & Development Log
+    </div>
+
     <div class="hero-brand">
-      <h1>Insights & Publications</h1>
-      <p class="hero-subtitle">Official updates by <strong>Tanveer Hussain</strong> (@VexorNull)</p>
+      <h1>Insights, Code & Media</h1>
+      <p class="hero-subtitle">Curated publications, system workflows, and digital media projects by <strong>Tanveer Hussain</strong></p>
     </div>
 
     <!-- Clean Standard Social Hub -->
@@ -68,19 +76,22 @@
       </a>
     </div>
 
+    <!-- Search Input Box -->
     <div class="search-box">
-      <input type="text" id="search-input" placeholder="Search posts by title or category...">
+      <input type="text" id="search-input" placeholder="🔍 Search posts by title, tag, or content...">
     </div>
   </header>
 
+  <!-- Main Content Container -->
   <main class="container">
     <div id="posts-container" class="grid">
-      <p style="text-align: center; color: var(--text-muted);">Loading content...</p>
+      <p style="text-align: center; color: var(--text-muted); font-size: 0.95rem; padding: 2rem 0;">Loading publications...</p>
     </div>
   </main>
 
-  <footer style="text-align: center; padding: 20px; margin-top: 40px; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.85rem;">
-    © 2026 Tanveer Hussain. Connected as <strong>@VexorNull</strong>. All rights reserved.
+  <!-- Clean Professional Footer -->
+  <footer class="site-footer">
+    <p>© 2026 <strong>Tanveer Hussain</strong>. Powered by <a href="https://github.com/VexorNull" target="_blank" style="color: var(--primary); text-decoration: none;">@VexorNull</a></p>
   </footer>
 
   <script type="module" src="./js/app.js"></script>
