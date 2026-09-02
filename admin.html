@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard - Management Portal</title>
+  <title>Admin Portal - Dashboard</title>
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
 
   <nav class="navbar">
-    <a href="./index.html" class="logo">Admin<span>Panel</span></a>
+    <a href="./index.html" class="logo">Admin<span>Portal</span></a>
     <div class="nav-links">
       <a href="./index.html">View Main Site</a>
       <a href="#" id="logout-btn" class="hidden">Logout</a>
@@ -17,7 +17,6 @@
   </nav>
 
   <main class="container" style="margin-top: 2rem;">
-    
     <!-- Login Panel -->
     <div id="login-card" class="card" style="max-width: 420px; margin: 3rem auto;">
       <h2 style="margin-bottom: 1.5rem; text-align: center;">Portal Access</h2>
@@ -32,136 +31,39 @@
       <button id="login-btn">Authenticate</button>
     </div>
 
-    <!-- Admin Operations Center -->
+    <!-- Admin Control Center -->
     <div id="dashboard" class="hidden">
       <section class="card" style="margin-bottom: 2rem;">
-        <h2 style="margin-bottom: 1rem;">Create Publication</h2>
+        <h2>Create Article with Media</h2>
+        <br>
         <div class="form-group">
           <label>Title</label>
-          <input type="text" id="post-title" placeholder="Enter headline...">
+          <input type="text" id="post-title" placeholder="Title...">
         </div>
         <div class="form-group">
-          <label>Content Body</label>
+          <label>Category</label>
+          <select id="post-category">
+            <option value="Tech">Tech</option>
+            <option value="Updates">Updates</option>
+            <option value="Life">Life</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Upload Image (Optional)</label>
+          <input type="file" id="post-image" accept="image/*">
+        </div>
+        <div class="form-group">
+          <label>Content</label>
           <textarea id="post-content" rows="6" placeholder="Write article content..."></textarea>
         </div>
-        <button id="publish-btn">Publish Article</button>
+        <button id="publish-btn">Publish Post</button>
       </section>
 
-      <h2>Manage Articles</h2>
-      <div id="admin-posts" class="grid" style="margin-top: 1rem;">
-        <p style="color: var(--text-muted);">Loading articles...</p>
-      </div>
+      <h2>Manage Content</h2>
+      <div id="admin-posts" class="grid" style="margin-top: 1rem;"></div>
     </div>
-
   </main>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCxrWpPkeGkJlUFQ2v7riPUUq5phJfMa_4",
-      authDomain: "vexornull.firebaseapp.com",
-      projectId: "vexornull",
-      storageBucket: "vexornull.firebasestorage.app",
-      messagingSenderId: "1096477994848",
-      appId: "1:1096477994848:web:037df6a720ab0420b0b805"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    onAuthStateChanged(auth, (user) => {
-      const loginCard = document.getElementById("login-card");
-      const dashboard = document.getElementById("dashboard");
-      const logoutBtn = document.getElementById("logout-btn");
-
-      if (user) {
-        loginCard.classList.add("hidden");
-        dashboard.classList.remove("hidden");
-        logoutBtn.classList.remove("hidden");
-        loadAdminPosts();
-      } else {
-        loginCard.classList.remove("hidden");
-        dashboard.classList.add("hidden");
-        logoutBtn.classList.add("hidden");
-      }
-    });
-
-    document.getElementById("login-btn").addEventListener("click", async () => {
-      const u = document.getElementById("username").value.trim();
-      const p = document.getElementById("password").value;
-      const email = u.toLowerCase() === "admin" ? "admin@vexornull.com" : `${u}@vexornull.com`;
-
-      try {
-        await signInWithEmailAndPassword(auth, email, p);
-      } catch (err) {
-        alert("Access Denied: Invalid credentials.");
-      }
-    });
-
-    document.getElementById("logout-btn").addEventListener("click", (e) => {
-      e.preventDefault();
-      signOut(auth);
-    });
-
-    document.getElementById("publish-btn").addEventListener("click", async () => {
-      const title = document.getElementById("post-title").value;
-      const content = document.getElementById("post-content").value;
-
-      if (!title || !content) return alert("Fill out all fields.");
-
-      try {
-        await addDoc(collection(db, "posts"), {
-          title, content, createdAt: new Date()
-        });
-        document.getElementById("post-title").value = "";
-        document.getElementById("post-content").value = "";
-        loadAdminPosts();
-      } catch (err) {
-        alert("Publish error: " + err.message);
-      }
-    });
-
-    async function loadAdminPosts() {
-      const container = document.getElementById("admin-posts");
-      try {
-        const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
-        const snapshot = await getDocs(q);
-        container.innerHTML = "";
-
-        if (snapshot.empty) {
-          container.innerHTML = `<p style="color: var(--text-muted);">No articles found.</p>`;
-          return;
-        }
-
-        snapshot.forEach((docSnap) => {
-          const data = docSnap.data();
-          const card = document.createElement("div");
-          card.className = "card";
-          card.innerHTML = `
-            <h3>${data.title}</h3>
-            <p style="margin-top:0.5rem; color:#cbd5e1;">${data.content}</p>
-            <button class="btn-danger" data-id="${docSnap.id}">Delete Article</button>
-          `;
-          container.appendChild(card);
-        });
-
-        document.querySelectorAll(".btn-danger").forEach(btn => {
-          btn.addEventListener("click", async (e) => {
-            const id = e.target.getAttribute("data-id");
-            if (confirm("Delete this article permanently?")) {
-              await deleteDoc(doc(db, "posts", id));
-              loadAdminPosts();
-            }
-          });
-        });
-      } catch (err) {
-        container.innerHTML = `<p>Error loading articles.</p>`;
-      }
-    }
-  </script>
+  <script type="module" src="./js/admin.js"></script>
 </body>
 </html>
