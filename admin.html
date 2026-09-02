@@ -4,15 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard - Management Portal</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
 
   <nav class="navbar">
-    <a href="index.html" class="logo">Admin<span>Panel</span></a>
+    <a href="./index.html" class="logo">Admin<span>Panel</span></a>
     <div class="nav-links">
-      <a href="index.html">View Main Site</a>
-      <a href="#" id="logout-btn" class="hidden" onclick="logout()">Logout</a>
+      <a href="./index.html">View Main Site</a>
+      <a href="#" id="logout-btn" class="hidden">Logout</a>
     </div>
   </nav>
 
@@ -29,7 +29,7 @@
         <label>Password</label>
         <input type="password" id="password" placeholder="••••••••">
       </div>
-      <button onclick="login()">Authenticate</button>
+      <button id="login-btn">Authenticate</button>
     </div>
 
     <!-- Admin Operations Center -->
@@ -44,7 +44,7 @@
           <label>Content Body</label>
           <textarea id="post-content" rows="6" placeholder="Write article content..."></textarea>
         </div>
-        <button onclick="publishPost()">Publish Article</button>
+        <button id="publish-btn">Publish Article</button>
       </section>
 
       <h2>Manage Articles</h2>
@@ -90,7 +90,7 @@
       }
     });
 
-    window.login = async function() {
+    document.getElementById("login-btn").addEventListener("click", async () => {
       const u = document.getElementById("username").value.trim();
       const p = document.getElementById("password").value;
       const email = u.toLowerCase() === "admin" ? "admin@vexornull.com" : `${u}@vexornull.com`;
@@ -100,13 +100,14 @@
       } catch (err) {
         alert("Access Denied: Invalid credentials.");
       }
-    };
+    });
 
-    window.logout = function() {
+    document.getElementById("logout-btn").addEventListener("click", (e) => {
+      e.preventDefault();
       signOut(auth);
-    };
+    });
 
-    window.publishPost = async function() {
+    document.getElementById("publish-btn").addEventListener("click", async () => {
       const title = document.getElementById("post-title").value;
       const content = document.getElementById("post-content").value;
 
@@ -122,7 +123,7 @@
       } catch (err) {
         alert("Publish error: " + err.message);
       }
-    };
+    });
 
     async function loadAdminPosts() {
       const container = document.getElementById("admin-posts");
@@ -131,27 +132,36 @@
         const snapshot = await getDocs(q);
         container.innerHTML = "";
 
+        if (snapshot.empty) {
+          container.innerHTML = `<p style="color: var(--text-muted);">No articles found.</p>`;
+          return;
+        }
+
         snapshot.forEach((docSnap) => {
           const data = docSnap.data();
-          container.innerHTML += `
-            <div class="card">
-              <h3>${data.title}</h3>
-              <p style="margin-top:0.5rem; color:#cbd5e1;">${data.content}</p>
-              <button class="btn-danger" onclick="deleteArticle('${docSnap.id}')">Delete Article</button>
-            </div>
+          const card = document.createElement("div");
+          card.className = "card";
+          card.innerHTML = `
+            <h3>${data.title}</h3>
+            <p style="margin-top:0.5rem; color:#cbd5e1;">${data.content}</p>
+            <button class="btn-danger" data-id="${docSnap.id}">Delete Article</button>
           `;
+          container.appendChild(card);
+        });
+
+        document.querySelectorAll(".btn-danger").forEach(btn => {
+          btn.addEventListener("click", async (e) => {
+            const id = e.target.getAttribute("data-id");
+            if (confirm("Delete this article permanently?")) {
+              await deleteDoc(doc(db, "posts", id));
+              loadAdminPosts();
+            }
+          });
         });
       } catch (err) {
         container.innerHTML = `<p>Error loading articles.</p>`;
       }
     }
-
-    window.deleteArticle = async function(id) {
-      if (confirm("Delete this article permanently?")) {
-        await deleteDoc(doc(db, "posts", id));
-        loadAdminPosts();
-      }
-    };
   </script>
 </body>
 </html>
