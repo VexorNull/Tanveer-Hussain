@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,68 +11,60 @@
   <nav class="navbar">
     <a href="./index.html" class="logo">Tanveer<span>Hussain</span></a>
     <div class="nav-links">
+      <button class="btn-theme" id="theme-toggle">🌙 / ☀️</button>
       <a href="./index.html">Home</a>
-      <a href="./admin.html" class="btn-admin">Admin Portal</a>
+      <a href="./admin.html">Admin Portal</a>
     </div>
   </nav>
 
   <header class="hero">
     <h1>Insights & Updates</h1>
-    <p>Official publications, tech explorations, and continuous updates.</p>
+    <div class="search-box">
+      <input type="text" id="search-input" placeholder="Search posts by title or tag...">
+    </div>
   </header>
 
   <main class="container">
     <div id="posts-container" class="grid">
-      <p style="text-align: center; color: var(--text-muted);">Loading updates...</p>
+      <p style="text-align: center; color: var(--text-muted);">Loading content...</p>
     </div>
   </main>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tanveer Hussain - Web Platform</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyCxrWpPkeGkJlUFQ2v7riPUUq5phJfMa_4",
-      authDomain: "vexornull.firebaseapp.com",
-      projectId: "vexornull",
-      storageBucket: "vexornull.firebasestorage.app",
-      messagingSenderId: "1096477994848",
-      appId: "1:1096477994848:web:037df6a720ab0420b0b805"
-    };
+  <nav class="navbar">
+    <a href="./index.html" class="logo">Tanveer<span>Hussain</span></a>
+    <div class="nav-links">
+      <button class="btn-theme" id="theme-toggle">🌙 / ☀️</button>
+      <a href="./index.html">Home</a>
+      <a href="./admin.html">Admin Portal</a>
+    </div>
+  </nav>
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+  <header class="hero">
+    <h1>Insights & Updates</h1>
+    <div class="search-box">
+      <input type="text" id="search-input" placeholder="Search posts by title or tag...">
+    </div>
+  </header>
 
-    async function fetchPosts() {
-      const container = document.getElementById("posts-container");
-      try {
-        const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
-        const snapshot = await getDocs(q);
-        
-        if (snapshot.empty) {
-          container.innerHTML = `<p style="text-align: center; color: var(--text-muted);">No posts available yet.</p>`;
-          return;
-        }
+  <main class="container">
+    <div id="posts-container" class="grid">
+      <p style="text-align: center; color: var(--text-muted);">Loading content...</p>
+    </div>
+  </main>
 
-        container.innerHTML = "";
-        snapshot.forEach((doc) => {
-          const data = doc.data();
-          const postDate = data.createdAt ? new Date(data.createdAt.toDate()).toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' }) : '';
-          
-          container.innerHTML += `
-            <article class="card">
-              <h2 class="post-title">${data.title}</h2>
-              <span class="post-date">${postDate}</span>
-              <p class="post-content">${data.content}</p>
-            </article>
-          `;
-        });
-      } catch (err) {
-        container.innerHTML = `<p style="text-align: center; color: var(--text-muted);">Failed to load posts.</p>`;
-      }
-    }
-
-    fetchPosts();
-  </script>
+  <script type="module" src="./js/app.js"></script>
 </body>
 </html>
