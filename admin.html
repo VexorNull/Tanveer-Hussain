@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Management Portal</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="logo">Admin<span>Panel</span></a>
+    <div class="nav-links">
+      <a href="index.html">View Main Site</a>
+      <a href="#" id="logout-btn" class="hidden" onclick="logout()">Logout</a>
+    </div>
+  </nav>
+
+  <main class="container" style="margin-top: 2rem;">
+    
+    <!-- Login Panel -->
+    <div id="login-card" class="card" style="max-width: 420px; margin: 3rem auto;">
+      <h2 style="margin-bottom: 1.5rem; text-align: center;">Portal Access</h2>
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="username" placeholder="Admin">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="••••••••">
+      </div>
+      <button onclick="login()">Authenticate</button>
+    </div>
+
+    <!-- Admin Operations Center -->
+    <div id="dashboard" class="hidden">
+      <section class="card" style="margin-bottom: 2rem;">
+        <h2 style="margin-bottom: 1rem;">Create Publication</h2>
+        <div class="form-group">
+          <label>Title</label>
+          <input type="text" id="post-title" placeholder="Enter headline...">
+        </div>
+        <div class="form-group">
+          <label>Content Body</label>
+          <textarea id="post-content" rows="6" placeholder="Write article content..."></textarea>
+        </div>
+        <button onclick="publishPost()">Publish Article</button>
+      </section>
+
+      <h2>Manage Articles</h2>
+      <div id="admin-posts" class="grid" style="margin-top: 1rem;">
+        <p style="color: var(--text-muted);">Loading articles...</p>
+      </div>
+    </div>
+
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCxrWpPkeGkJlUFQ2v7riPUUq5phJfMa_4",
+      authDomain: "vexornull.firebaseapp.com",
+      projectId: "vexornull",
+      storageBucket: "vexornull.firebasestorage.app",
+      messagingSenderId: "1096477994848",
+      appId: "1:1096477994848:web:037df6a720ab0420b0b805"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    onAuthStateChanged(auth, (user) => {
+      const loginCard = document.getElementById("login-card");
+      const dashboard = document.getElementById("dashboard");
+      const logoutBtn = document.getElementById("logout-btn");
+
+      if (user) {
+        loginCard.classList.add("hidden");
+        dashboard.classList.remove("hidden");
+        logoutBtn.classList.remove("hidden");
+        loadAdminPosts();
+      } else {
+        loginCard.classList.remove("hidden");
+        dashboard.classList.add("hidden");
+        logoutBtn.classList.add("hidden");
+      }
+    });
+
+    window.login = async function() {
+      const u = document.getElementById("username").value.trim();
+      const p = document.getElementById("password").value;
+      const email = u.toLowerCase() === "admin" ? "admin@vexornull.com" : `${u}@vexornull.com`;
+
+      try {
+        await signInWithEmailAndPassword(auth, email, p);
+      } catch (err) {
+        alert("Access Denied: Invalid credentials.");
+      }
+    };
+
+    window.logout = function() {
+      signOut(auth);
+    };
+
+    window.publishPost = async function() {
+      const title = document.getElementById("post-title").value;
+      const content = document.getElementById("post-content").value;
+
+      if (!title || !content) return alert("Fill out all fields.");
+
+      try {
+        await addDoc(collection(db, "posts"), {
+          title, content, createdAt: new Date()
+        });
+        document.getElementById("post-title").value = "";
+        document.getElementById("post-content").value = "";
+        loadAdminPosts();
+      } catch (err) {
+        alert("Publish error: " + err.message);
+      }
+    };
+
+    async function loadAdminPosts() {
+      const container = document.getElementById("admin-posts");
+      try {
+        const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+        const snapshot = await getDocs(q);
+        container.innerHTML = "";
+
+        snapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          container.innerHTML += `
+            <div class="card">
+              <h3>${data.title}</h3>
+              <p style="margin-top:0.5rem; color:#cbd5e1;">${data.content}</p>
+              <button class="btn-danger" onclick="deleteArticle('${docSnap.id}')">Delete Article</button>
+            </div>
+          `;
+        });
+      } catch (err) {
+        container.innerHTML = `<p>Error loading articles.</p>`;
+      }
+    }
+
+    window.deleteArticle = async function(id) {
+      if (confirm("Delete this article permanently?")) {
+        await deleteDoc(doc(db, "posts", id));
+        loadAdminPosts();
+      }
+    };
+  </script>
+</body>
+</html>
